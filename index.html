@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backwords — reverse the word order of any sentence</title>
+<meta name="description" content="Type a sentence, get it back with the words in the opposite order.">
+<meta name="theme-color" content="#151519">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%94%84</text></svg>">
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --panel: #ffffff;
+    --ink: #1a1a1c;
+    --muted: #6b6b73;
+    --line: #e2e2dd;
+    --accent: #4f46e5;
+    --accent-soft: #eeecfd;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151519;
+      --panel: #1e1e24;
+      --ink: #f0f0f2;
+      --muted: #9a9aa5;
+      --line: #2e2e37;
+      --accent: #a5b4fc;
+      --accent-soft: #262636;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    padding: 2rem 1.25rem 4rem;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap { width: 100%; max-width: 640px; }
+
+  header { margin-bottom: 1.75rem; }
+  h1 {
+    font-size: clamp(1.9rem, 7vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 .4rem;
+  }
+  h1 .flip { display: inline-block; transform: scaleX(-1); color: var(--accent); }
+  .tagline { color: var(--muted); margin: 0; font-size: 1rem; }
+  .tagline code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .9em;
+    background: var(--accent-soft);
+    color: var(--ink);
+    padding: .1em .4em;
+    border-radius: 5px;
+  }
+
+  label.field { display: block; margin-bottom: 1rem; }
+  .field-label {
+    display: block;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--muted);
+    margin-bottom: .45rem;
+    font-weight: 600;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 7.5rem;
+    resize: vertical;
+    padding: .9rem 1rem;
+    font: inherit;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .out {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: .9rem 1rem;
+    min-height: 7.5rem;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    font-size: 1.05rem;
+  }
+  .out.empty { color: var(--muted); }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    margin: 1rem 0 1.25rem;
+  }
+  .seg {
+    display: inline-flex;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .seg button {
+    font: inherit;
+    font-size: .88rem;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: .35rem .8rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  .btn {
+    font: inherit;
+    font-size: .88rem;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn[disabled] { opacity: .45; cursor: default; }
+  .spacer { flex: 1 1 auto; }
+
+  .examples { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+  .examples .field-label { margin-bottom: .6rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .chip {
+    font: inherit;
+    font-size: .85rem;
+    border: 1px dashed var(--line);
+    background: transparent;
+    color: var(--muted);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .chip:hover { border-style: solid; border-color: var(--accent); color: var(--ink); }
+
+  footer { margin-top: 2.5rem; color: var(--muted); font-size: .82rem; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Back<span class="flip">words</span></h1>
+    <p class="tagline"><code>go out to</code> &rarr; <code>to out go</code></p>
+  </header>
+
+  <label class="field">
+    <span class="field-label">Your sentence</span>
+    <textarea id="input" autofocus spellcheck="false"
+      placeholder="Type something&hellip;"></textarea>
+  </label>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Reversal mode">
+      <button type="button" data-mode="words" aria-pressed="true">Words</button>
+      <button type="button" data-mode="letters" aria-pressed="false">Letters</button>
+      <button type="button" data-mode="both" aria-pressed="false">Both</button>
+    </div>
+    <div class="spacer"></div>
+    <button type="button" class="btn" id="copy" disabled>Copy</button>
+    <button type="button" class="btn" id="clear" disabled>Clear</button>
+  </div>
+
+  <div class="field-label">Backwards</div>
+  <output class="out empty" id="output" for="input" aria-live="polite">&hellip;</output>
+
+  <div class="examples">
+    <span class="field-label">Try one</span>
+    <div class="chips">
+      <button class="chip" type="button">go out to</button>
+      <button class="chip" type="button">the quick brown fox jumps over the lazy dog</button>
+      <button class="chip" type="button">I am not throwing away my shot</button>
+      <button class="chip" type="button">never odd or even</button>
+    </div>
+  </div>
+
+  <footer>
+    Runs entirely in your browser &mdash; nothing is sent anywhere.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var input  = document.getElementById('input');
+  var output = document.getElementById('output');
+  var copyBtn  = document.getElementById('copy');
+  var clearBtn = document.getElementById('clear');
+  var mode = 'words';
+
+  // Reverse the word order of one line, keeping the original run of
+  // whitespace between words in place (so alignment survives a round trip).
+  function reverseWords(line) {
+    var tokens = line.split(/(\s+)/);          // words and gaps, alternating
+    var words = tokens.filter(function (t, i) { return i % 2 === 0; }).reverse();
+    var gaps  = tokens.filter(function (t, i) { return i % 2 === 1; });
+    var out = '';
+    for (var i = 0; i < words.length; i++) {
+      out += words[i];
+      if (i < gaps.length) out += gaps[i];
+    }
+    return out;
+  }
+
+  // Split on grapheme clusters when the browser can, so emoji and
+  // combining marks don't get torn apart.
+  var segmenter = (typeof Intl !== 'undefined' && Intl.Segmenter)
+    ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+    : null;
+
+  function reverseChars(str) {
+    var parts;
+    if (segmenter) {
+      parts = [];
+      var it = segmenter.segment(str)[Symbol.iterator]();
+      for (var s = it.next(); !s.done; s = it.next()) parts.push(s.value.segment);
+    } else {
+      parts = Array.from(str);
+    }
+    return parts.reverse().join('');
+  }
+
+  // Spell each word backwards without moving it.
+  function reverseEachWord(line) {
+    return line.split(/(\s+)/).map(function (t, i) {
+      return i % 2 === 0 ? reverseChars(t) : t;
+    }).join('');
+  }
+
+  function transform(text) {
+    return text.split('\n').map(function (line) {
+      if (mode === 'letters') return reverseEachWord(line);
+      if (mode === 'both')    return reverseChars(line);
+      return reverseWords(line);
+    }).join('\n');
+  }
+
+  function render() {
+    var text = input.value;
+    var has = text.trim().length > 0;
+
+    output.textContent = has ? transform(text) : '…';
+    output.classList.toggle('empty', !has);
+    copyBtn.disabled = !has;
+    clearBtn.disabled = !has;
+    copyBtn.textContent = 'Copy';
+  }
+
+  input.addEventListener('input', render);
+
+  document.querySelectorAll('.seg button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      mode = btn.dataset.mode;
+      document.querySelectorAll('.seg button').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      render();
+    });
+  });
+
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      input.value = chip.textContent;
+      input.focus();
+      render();
+    });
+  });
+
+  clearBtn.addEventListener('click', function () {
+    input.value = '';
+    input.focus();
+    render();
+  });
+
+  copyBtn.addEventListener('click', function () {
+    var text = output.textContent;
+    var done = function () {
+      copyBtn.textContent = 'Copied';
+      setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1200);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
