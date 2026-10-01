@@ -5,175 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Backwords — reverse the word order of any sentence</title>
 <meta name="description" content="Type a sentence, get it back with the words in the opposite order.">
-<meta name="theme-color" content="#151519">
+<meta name="theme-color" content="#008080">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%94%84</text></svg>">
 <style>
-  :root {
-    --bg: #f6f6f4;
-    --panel: #ffffff;
-    --ink: #1a1a1c;
-    --muted: #6b6b73;
-    --line: #e2e2dd;
-    --accent: #4f46e5;
-    --accent-soft: #eeecfd;
-    --radius: 14px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #151519;
-      --panel: #1e1e24;
-      --ink: #f0f0f2;
-      --muted: #9a9aa5;
-      --line: #2e2e37;
-      --accent: #a5b4fc;
-      --accent-soft: #262636;
-    }
-  }
+/* theme:base:start */
+/* =====================================================================
+   workbox house theme — "grey desk"
+   Classic desktop chrome: bevelled grey panels on a teal desktop,
+   navy title bars, white sunken fields, square corners, no gradients
+   except the title bar. One look on purpose (no dark variant).
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    -webkit-text-size-adjust: 100%;
-    padding: 2rem 1.25rem 4rem;
-    display: flex;
-    justify-content: center;
-  }
-  .wrap { width: 100%; max-width: 640px; }
+   This file is the reference copy. Every project inlines it at the top
+   of its own <style> (so no app depends on another being up), then adds
+   page-specific rules underneath. Copy it into new projects too.
+   ===================================================================== */
 
-  header { margin-bottom: 1.75rem; }
-  h1 {
-    font-size: clamp(1.9rem, 7vw, 2.6rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin: 0 0 .4rem;
-  }
-  h1 .flip { display: inline-block; transform: scaleX(-1); color: var(--accent); }
-  .tagline { color: var(--muted); margin: 0; font-size: 1rem; }
-  .tagline code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: .9em;
-    background: var(--accent-soft);
-    color: var(--ink);
-    padding: .1em .4em;
-    border-radius: 5px;
-  }
+/* layout: pages are windows sitting on a desktop; content groups are
+   inset panels or group boxes inside the window body */
+:root{
+  /* surfaces */
+  --desk:#008080;        /* desktop */
+  --face:#c0c0c0;        /* window + button face */
+  --field:#ffffff;       /* text fields, list panes */
+  --tip:#ffffe1;         /* tooltip / hint yellow */
+  /* bevel edges */
+  --hilite:#ffffff; --light:#dfdfdf; --shade:#808080; --dark:#0a0a0a;
+  /* ink */
+  --ink:#000000; --ink-dim:#3c3c3c; --ink-faint:#6a6a6a;
+  --link:#0000cc;
+  /* title bar + selection */
+  --title:#000080; --title2:#1084d0; --sel:#000080; --sel-ink:#ffffff;
+  /* state (separate from the chrome) */
+  --ok:#007a00; --bad:#b00000; --warn:#8a6100;
 
-  label.field { display: block; margin-bottom: 1rem; }
-  .field-label {
-    display: block;
-    font-size: .78rem;
-    text-transform: uppercase;
-    letter-spacing: .09em;
-    color: var(--muted);
-    margin-bottom: .45rem;
-    font-weight: 600;
-  }
+  --font:Tahoma,Verdana,"Segoe UI","DejaVu Sans",Geneva,sans-serif;
+  --mono:"Lucida Console","Courier New",ui-monospace,monospace;
 
-  textarea {
-    width: 100%;
-    min-height: 7.5rem;
-    resize: vertical;
-    padding: .9rem 1rem;
-    font: inherit;
-    color: var(--ink);
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-  textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
+  /* bevels: light from top-left */
+  --raised: inset -1px -1px var(--dark), inset 1px 1px var(--hilite),
+            inset -2px -2px var(--shade), inset 2px 2px var(--light);
+  --pressed:inset -1px -1px var(--hilite), inset 1px 1px var(--dark),
+            inset -2px -2px var(--light), inset 2px 2px var(--shade);
+  --sunken: inset -1px -1px var(--hilite), inset 1px 1px var(--shade),
+            inset -2px -2px var(--light), inset 2px 2px var(--dark);
+  --frame:  inset -1px -1px var(--dark), inset 1px 1px var(--light),
+            inset -2px -2px var(--shade), inset 2px 2px var(--hilite);
+  --well:   inset -1px -1px var(--hilite), inset 1px 1px var(--shade);
+  --dither: repeating-conic-gradient(var(--face) 0 25%, var(--hilite) 0 50%) 0 0/2px 2px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font:14px/1.45 var(--font)}
+::selection{background:var(--sel);color:var(--sel-ink)}
+a{color:var(--link)}
+[hidden]{display:none!important}
 
-  .out {
-    position: relative;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: .9rem 1rem;
-    min-height: 7.5rem;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    font-size: 1.05rem;
-  }
-  .out.empty { color: var(--muted); }
+/* ---- window ---- */
+.win{background:var(--face);box-shadow:var(--frame);padding:3px;min-width:0}
+.win-title{display:flex;align-items:center;gap:6px;min-height:24px;padding:2px 3px 2px 5px;
+  background:linear-gradient(90deg,var(--title),var(--title2));color:#fff;font-weight:700;
+  font-size:13px;line-height:1.2;user-select:none}
+.win-title .ttl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;font-size:inherit;font-weight:inherit;letter-spacing:0}
+.win-title .ttl a{color:inherit;text-decoration:none}
+.win-title .ico{font-size:14px;line-height:1}
+.win-x{flex:none;width:20px;height:18px;display:grid;place-items:center;background:var(--face);
+  box-shadow:var(--raised);color:var(--ink);text-decoration:none;font:700 13px/1 var(--font)}
+.win-x:active{box-shadow:var(--pressed)}
+.win-x:focus-visible{outline:1px dotted var(--ink);outline-offset:-4px}
+.win-body{padding:12px;min-width:0}
+.win-body > *{min-width:0}
+/* status bar along a window's bottom edge */
+.statusbar{display:flex;gap:3px;margin-top:2px;font-size:12px}
+.statusbar > *{box-shadow:var(--well);padding:2px 6px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.statusbar > :first-child{flex:1}
 
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .5rem;
-    margin: 1rem 0 1.25rem;
-  }
-  .seg {
-    display: inline-flex;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 3px;
-  }
-  .seg button {
-    font: inherit;
-    font-size: .88rem;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    padding: .35rem .8rem;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-  .seg button[aria-pressed="true"] {
-    background: var(--accent);
-    color: var(--bg);
-    font-weight: 600;
-  }
+/* ---- group box (labelled frame) ---- */
+.group{position:relative;border:1px solid var(--shade);box-shadow:inset 1px 1px var(--hilite),1px 1px var(--hilite);
+  padding:16px 12px 12px;margin-top:10px}
+.group > .legend{position:absolute;top:-9px;left:8px;padding:0 4px;background:var(--face);
+  font-weight:400;font-size:13px;line-height:16px;margin:0;color:var(--ink);text-transform:none;letter-spacing:0}
 
-  .btn {
-    font: inherit;
-    font-size: .88rem;
-    border: 1px solid var(--line);
-    background: var(--panel);
-    color: var(--ink);
-    padding: .45rem .9rem;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-  .btn:hover { border-color: var(--accent); }
-  .btn[disabled] { opacity: .45; cursor: default; }
-  .spacer { flex: 1 1 auto; }
+/* ---- controls ---- */
+button,.btn{font:inherit;color:var(--ink);background:var(--face);border:0;border-radius:0;
+  box-shadow:var(--raised);padding:6px 16px;min-height:30px;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:active:not(:disabled),.btn:active{box-shadow:var(--pressed)}
+button:focus-visible,.btn:focus-visible{outline:1px dotted var(--ink);outline-offset:-5px}
+button:disabled{color:var(--shade);text-shadow:1px 1px var(--hilite);cursor:default}
+/* default button: the extra black ring */
+button.default{box-shadow:0 0 0 1px var(--dark),var(--raised)}
+button.default:active:not(:disabled){box-shadow:0 0 0 1px var(--dark),var(--pressed)}
+/* latched toggle */
+.latched{box-shadow:var(--pressed)!important;background:var(--dither)!important}
 
-  .examples { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
-  .examples .field-label { margin-bottom: .6rem; }
-  .chips { display: flex; flex-wrap: wrap; gap: .45rem; }
-  .chip {
-    font: inherit;
-    font-size: .85rem;
-    border: 1px dashed var(--line);
-    background: transparent;
-    color: var(--muted);
-    padding: .35rem .75rem;
-    border-radius: 999px;
-    cursor: pointer;
-    text-align: left;
-  }
-  .chip:hover { border-style: solid; border-color: var(--accent); color: var(--ink); }
+input[type=text],input[type=url],input[type=search],input[type=number],input[type=time],
+input[type=email],input[type=password],textarea,select{
+  font:inherit;color:var(--ink);background:var(--field);border:0;border-radius:0;
+  box-shadow:var(--sunken);padding:5px 6px;outline:none}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:1px dotted var(--ink);outline-offset:-4px}
+input::placeholder,textarea::placeholder{color:var(--ink-faint)}
+select{appearance:none;-webkit-appearance:none;padding-right:24px;cursor:pointer;
+  background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='18'%3E%3Crect width='16' height='18' fill='%23c0c0c0'/%3E%3Cpath d='M0 17.5H16M15.5 0V18' stroke='%230a0a0a'/%3E%3Cpath d='M1 16.5H15M14.5 1V17' stroke='%23808080'/%3E%3Cpath d='M.5 0V17M0 .5H15' stroke='%23fff'/%3E%3Cpath d='M4 7h8l-4 4z' fill='%23000'/%3E%3C/svg%3E") no-repeat right 2px center}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:15px;height:15px;margin:0;flex:none;
+  background:var(--field);box-shadow:var(--sunken);cursor:pointer;vertical-align:-3px}
+input[type=checkbox]:checked{background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 2h1v1h1v1h1V3h1V2h1V1h1V0h1v3H6v1H5v1H4v1H3v1H2V6H1V5H0z'/%3E%3C/svg%3E") no-repeat center}
+input[type=checkbox]:focus-visible{outline:1px dotted var(--ink);outline-offset:2px}
+input[type=range]{appearance:none;-webkit-appearance:none;background:transparent;height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;box-shadow:var(--sunken);background:var(--face)}
+input[type=range]::-moz-range-track{height:4px;box-shadow:var(--sunken);background:var(--face)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:21px;margin-top:-9px;background:var(--face);box-shadow:var(--raised);border:0}
+input[type=range]::-moz-range-thumb{width:11px;height:21px;background:var(--face);box-shadow:var(--raised);border:0;border-radius:0}
+@media (max-width:600px){ input,textarea,select{font-size:16px} } /* stops phones zooming in */
 
-  footer { margin-top: 2.5rem; color: var(--muted); font-size: .82rem; }
-  footer a { color: inherit; }
+/* progress: navy blocks in a sunken well */
+.progress{height:20px;box-shadow:var(--sunken);background:var(--field);padding:3px}
+.progress > i{display:block;height:100%;
+  background:repeating-linear-gradient(90deg,var(--sel) 0 8px,transparent 8px 10px)}
+
+/* inset content pane (lists, results) */
+.pane{background:var(--field);box-shadow:var(--sunken);padding:8px}
+
+/* scrollbars */
+::-webkit-scrollbar{width:16px;height:16px}
+::-webkit-scrollbar-track{background:var(--dither)}
+::-webkit-scrollbar-thumb{background:var(--face);box-shadow:var(--raised)}
+::-webkit-scrollbar-corner{background:var(--face)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* theme:base:end */
+
+/* ---- backwords ---- */
+body{padding:2rem 16px 3rem;display:flex;justify-content:center}
+.wrap.win{width:100%;max-width:640px;align-self:flex-start}
+.win-title .ttl .flip{display:inline-block;transform:scaleX(-1)}
+.win-body{display:flex;flex-direction:column}
+.tagline{margin:0 0 14px;font-size:13px;color:var(--ink-dim)}
+.tagline code{font-family:var(--mono);font-size:12px;background:var(--field);box-shadow:var(--well);padding:1px 5px}
+label.field{display:block;margin-bottom:12px}
+.field-label{display:block;font-size:13px;margin-bottom:4px}
+textarea{width:100%;min-height:7rem;resize:vertical;display:block}
+.out{display:block;background:var(--field);box-shadow:var(--sunken);padding:8px 10px;min-height:7rem;
+  white-space:pre-wrap;overflow-wrap:break-word;font-size:16px}
+.out.empty{color:var(--ink-faint)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 14px}
+.seg{display:inline-flex;gap:0}
+.seg button{min-width:76px}
+.seg button[aria-pressed="true"]{box-shadow:var(--pressed);background:var(--dither);font-weight:700}
+.spacer{flex:1 1 auto}
+.examples{margin-top:18px;padding-top:12px;border-top:1px solid var(--shade);box-shadow:inset 0 1px var(--hilite)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:3px 10px;min-height:26px;text-align:left}
+footer.statusbar{margin-top:2px}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap win">
 
-  <header>
-    <h1>Back<span class="flip">words</span></h1>
-    <p class="tagline"><code>go out to</code> &rarr; <code>to out go</code></p>
+  <header class="win-title">
+    <span class="ico" aria-hidden="true">⇄</span>
+    <h1 class="ttl">Back<span class="flip">words</span></h1>
   </header>
+  <div class="win-body">
+  <p class="tagline"><code>go out to</code> &rarr; <code>to out go</code></p>
 
   <label class="field">
     <span class="field-label">Your sentence</span>
@@ -205,8 +199,9 @@
     </div>
   </div>
 
-  <footer>
-    Runs entirely in your browser &mdash; nothing is sent anywhere.
+  </div>
+  <footer class="statusbar">
+    <span>Runs entirely in your browser &mdash; nothing is sent anywhere.</span>
   </footer>
 
 </div>
