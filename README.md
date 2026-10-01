@@ -14,6 +14,10 @@ Type a sentence, get it back with the words in the opposite order.
 | **Letters** | `eht kciuq nworb xof` |
 | **Both** | `xof nworb kciuq eht` |
 
+**Mirror** is a view toggle that works with any mode: it flips the result
+horizontally, as if held up to a mirror. Copy still copies the plain text.
+(Tip: **Both** + **Mirror** shows your original sentence in mirror-writing.)
+
 Multi-line input is reversed line by line, so paragraphs keep their shape.
 Emoji and accented characters are split on grapheme clusters (via
 `Intl.Segmenter` where available) rather than raw code units, so they don't

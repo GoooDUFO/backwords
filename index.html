@@ -148,6 +148,8 @@ textarea{width:100%;min-height:7rem;resize:vertical;display:block}
 .out{display:block;background:var(--field);box-shadow:var(--sunken);padding:8px 10px;min-height:7rem;
   white-space:pre-wrap;overflow-wrap:break-word;font-size:16px}
 .out.empty{color:var(--ink-faint)}
+/* mirror view: flip the rendered output as if held up to a mirror */
+.out.mirror{transform:scaleX(-1)}
 .controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 14px}
 .seg{display:inline-flex;gap:0}
 .seg button{min-width:76px}
@@ -181,12 +183,14 @@ footer.statusbar{margin-top:2px}
       <button type="button" data-mode="letters" aria-pressed="false">Letters</button>
       <button type="button" data-mode="both" aria-pressed="false">Both</button>
     </div>
+    <button type="button" class="btn" id="mirror" aria-pressed="false"
+      title="Show the result as it would look in a mirror">Mirror</button>
     <div class="spacer"></div>
     <button type="button" class="btn" id="copy" disabled>Copy</button>
     <button type="button" class="btn" id="clear" disabled>Clear</button>
   </div>
 
-  <div class="field-label">Backwards</div>
+  <div class="field-label" id="out-label">Backwards</div>
   <output class="out empty" id="output" for="input" aria-live="polite">&hellip;</output>
 
   <div class="examples">
@@ -212,6 +216,8 @@ footer.statusbar{margin-top:2px}
   var output = document.getElementById('output');
   var copyBtn  = document.getElementById('copy');
   var clearBtn = document.getElementById('clear');
+  var mirrorBtn = document.getElementById('mirror');
+  var outLabel  = document.getElementById('out-label');
   var mode = 'words';
 
   // Reverse the word order of one line, keeping the original run of
@@ -273,6 +279,16 @@ footer.statusbar{margin-top:2px}
   }
 
   input.addEventListener('input', render);
+
+  // Mirror is a view, not a mode: it flips how the result is drawn and
+  // works on top of any mode. Copy still copies the plain text.
+  mirrorBtn.addEventListener('click', function () {
+    var on = mirrorBtn.getAttribute('aria-pressed') !== 'true';
+    mirrorBtn.setAttribute('aria-pressed', String(on));
+    mirrorBtn.classList.toggle('latched', on);
+    output.classList.toggle('mirror', on);
+    outLabel.textContent = on ? 'Backwards (in a mirror)' : 'Backwards';
+  });
 
   document.querySelectorAll('.seg button').forEach(function (btn) {
     btn.addEventListener('click', function () {
