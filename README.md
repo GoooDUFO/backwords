@@ -18,6 +18,11 @@ Type a sentence, get it back with the words in the opposite order.
 horizontally, as if held up to a mirror. Copy still copies the plain text.
 (Tip: **Both** + **Mirror** shows your original sentence in mirror-writing.)
 
+**Speak** buttons on both fields read the text aloud with the browser's
+built-in speech engine (nothing is sent anywhere). **Squeaky**, on by default,
+turns pitch and rate up for a high cartoon voice. How squeaky it gets depends
+on the voices your OS provides, and some engines ignore pitch.
+
 Multi-line input is reversed line by line, so paragraphs keep their shape.
 Emoji and accented characters are split on grapheme clusters (via
 `Intl.Segmenter` where available) rather than raw code units, so they don't
